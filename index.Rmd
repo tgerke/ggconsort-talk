@@ -1,0 +1,106 @@
+---
+title: "ggconsort"
+author: Travis Gerke, ScD
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    seal: false
+---
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+
+style_duo_accent(
+  primary_color = "#4e796f",
+  secondary_color = "#794e58",
+  colors = list(
+    offwhite = "#f5f0e4",
+    green = "#4e796f",
+    burgundy = "#794e58",
+    purple = "#5A4E79",
+    lightgreen = "#6E794E"
+  ),
+  extra_fonts = list(google_font("Raleway"))
+)
+```
+
+class: title-slide-custom
+
+## ggconsort
+
+### Travis Gerke, ScD <br> .purple[Director of Data Science] <br> .offwhite[PCCTC]
+
+<!--
+Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Tim Mossholder</a> on <a href="https://unsplash.com/s/photos/selection?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+-->
+
+---
+
+## Introduction
+
+
+
+```{css, echo = FALSE}
+.title-slide-custom {
+  position: relative;
+  z-index: 1;
+}
+.title-slide-custom h2 {
+  font-size: 3em;
+  position: absolute;
+  color: var(--offwhite);
+  bottom: 39%;
+  right: 20%;
+}
+.title-slide-custom h3 {
+  font-size: .75em;
+  text-align: right;
+  color: var(--green);
+  position: absolute;
+  bottom: 2%;
+  right: 2%;
+}
+.title-slide-custom::before {    
+      content: "";
+      background-image: url('images/tim-mossholder-zdV9ngtM0Sw-unsplash.jpg');
+      background-size: cover;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: 0px;
+      opacity: 0.7;
+      z-index: -1;
+}
+.title-slide-custom .remark-slide-number {
+  display: none;
+}
+.purple-bg {
+  background-color: var(--purple);
+}
+.h-center {
+  margin: 0 auto;
+}
+.w-90 {
+  width: 90%;
+}
+.w-50 {
+  width: 50%;
+}
+.small-rule{
+  font-size: 1em;
+  font-weight: bold;
+  color: var(--green);
+}
+
+.highlight-last-item > ul > li, 
+.highlight-last-item > ol > li {
+  opacity: 0.5;
+  color: var(--purple);
+}
+.highlight-last-item > ul > li:last-of-type,
+.highlight-last-item > ol > li:last-of-type {
+  opacity: 1;
+  font-weight: bold;
+}
+```
