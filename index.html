@@ -60,9 +60,9 @@ Photo by &lt;a href="https://unsplash.com/@timmossholder?utm_source=unsplash&amp
 
 * R implementations _not_ native to .green[ggplot2]
 
-  * .green[DiagrammeR/Graphviz]: [Wong](https://dannyjnwong.github.io/STROBE-CONSORT-Diagrams-in-R/), [Higgins/Gerber, 2020](https://github.com/higgi13425/ggconsort/pull/1), [Köhler 2017](https://scriptsandstatistics.wordpress.com/author/koehlern/)
-  * .green[tikz]: [Gerke lab](https://github.com/GerkeLab/consoRt)
-  * .green[JS]: [Gerke](https://github.com/tgerke/flowcharter)
+  * .green[DiagrammeR/Graphviz]: [Wong 2018](https://dannyjnwong.github.io/STROBE-CONSORT-Diagrams-in-R/), [Higgins/Gerber 2020](https://github.com/higgi13425/ggconsort/pull/1), [Köhler 2017](https://scriptsandstatistics.wordpress.com/author/koehlern/)
+  * .green[tikz]: [Gerke lab 2018](https://github.com/GerkeLab/consoRt)
+  * .green[JS]: [Gerke 2021](https://github.com/tgerke/flowcharter)
 
 * Challenges: non-.green[ggplot] syntax; sometimes _too much_ automation
 
@@ -108,8 +108,29 @@ https://github.com/higgi13425/ggconsort/
 Peter
 ]
 
+---
+class: middle
+
+.h-center.w-50[
+![](images/ggconsort-hex.svg)
+]
 
 ---
+class: inverse, middle, center
+
+&lt;span style="font-size:2em"&gt;
+CONSORT construction can be segmented into **.lightgreen[two]** stages
+&lt;/span&gt;
+
+&lt;br&gt;
+
+--
+
+**.lightgreen[1.]** Counting and annotation at the time of data wrangling
+
+--
+
+**.lightgreen[2.]** Diagram layout and aesthetic design
 
 
 &lt;style type="text/css"&gt;
@@ -312,11 +333,16 @@ Peter
     border-color: tranparent
   }
 }
+
 &lt;/style&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
-<script>var slideshow = remark.create();
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
 });
@@ -381,7 +407,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
       links[i].target = '_blank';
     }
   }
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 slideshow._releaseMath = function(el) {
