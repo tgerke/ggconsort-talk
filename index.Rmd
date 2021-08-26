@@ -35,9 +35,66 @@ Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_me
 -->
 
 ---
+### Flashback: R/Medicine 2020
 
-## Introduction
+![](images/higgins-consort.png)
 
+---
+### What are CONSORT diagrams?
+.h2-subtitle[★ Courtesy of Peter Higgins, R/Medicine 2020]
+
+<br>
+
+* A CONSORT diagram shows the flow of participants from screening to analysis, showing counts and reasons for exclusion along the way
+
+* Expected by most medical journals for reporting clinical trials (and, increasingly, observational studies)
+
+<!-- image source https://www.nejm.org/doi/full/10.1056/nejmoa071255 -->
+
+.h-center.w-35[
+![](images/nejm-consort.jpeg)
+]
+
+---
+### CONSORT diagrams are artisanal products
+.h2-subtitle[★ Courtesy of Peter Higgins, R/Medicine 2020]
+
+<br>
+* Most CONSORTs are built from [templates](http://www.consort-statement.org/consort-statement/flow-diagram) in Word/Powerpoint/Illustrator
+
+.h-center.w-50[
+![](images/consort.gif)
+]
+
+---
+### Prior work
+
+* R implementations _not_ native to .green[ggplot2]
+
+  * .green[DiagrammeR/Graphviz]: [Wong](https://dannyjnwong.github.io/STROBE-CONSORT-Diagrams-in-R/), [Higgins/Gerber, 2020](https://github.com/higgi13425/ggconsort/pull/1), [Köhler 2017](https://scriptsandstatistics.wordpress.com/author/koehlern/)
+  * .green[tikz]: [Gerke lab](https://github.com/GerkeLab/consoRt)
+  * .green[JS]: [Gerke](https://github.com/tgerke/flowcharter)
+
+* Challenges: non-.green[ggplot] syntax; sometimes _too much_ automation
+
+.h-center.w-40[
+![](images/diagrammer-consort.png)
+]
+
+
+---
+## R/Medicine 2020
+
+> A quote
+
+
+---
+
+.css-typing[
+This is a test.
+
+Let's see what happens now.
+]
 
 
 ```{css, echo = FALSE}
@@ -75,6 +132,11 @@ Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_me
 .title-slide-custom .remark-slide-number {
   display: none;
 }
+.h2-subtitle {
+  color: var(--burgundy);
+  position: absolute;
+  top: 15%;
+}
 .purple-bg {
   background-color: var(--purple);
 }
@@ -86,6 +148,12 @@ Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_me
 }
 .w-50 {
   width: 50%;
+}
+.w-40 {
+  width: 40%;
+}
+.w-35 {
+  width: 35%;
 }
 .small-rule{
   font-size: 1em;
@@ -102,5 +170,88 @@ Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_me
 .highlight-last-item > ol > li:last-of-type {
   opacity: 1;
   font-weight: bold;
+}
+
+.remark-visible .css-typing p {
+  opacity: 0;
+  border-right: .15em solid orange;
+  white-space: nowrap;
+  overflow: hidden;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards
+}
+.remark-visible .css-typing p:nth-child(1) {
+  width: 870px;
+  -webkit-animation: type 3s steps(70,end);
+  animation: type 3s steps(70,end);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards
+}
+.remark-visible .css-typing p:nth-child(2) {
+  width: 390px;
+  -webkit-animation: type 2s steps(31,end);
+  animation: type 2s steps(31,end);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-delay: 4s;
+  animation-delay: 4s
+}
+.remark-visible .css-typing p:nth-child(3) {
+  width: 110px;
+  -webkit-animation: type .5s steps(7,end);
+  animation: type .5s steps(7,end);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-delay: 7s;
+  animation-delay: 7s
+}
+.remark-visible .css-typing p:nth-child(4) {
+  width: 100px;
+  -webkit-animation: type .5s steps(7,end);
+  animation: type .5s steps(7,end);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-delay: 7.5s;
+  animation-delay: 7.5s
+}
+@keyframes type {
+  0% {
+    width: 0
+  }
+  1% {
+    opacity: 1
+  }
+  99.9% {
+    border-right: .15em solid orange
+  }
+  100% {
+    opacity: 1;
+    border: none
+  }
+}
+@-webkit-keyframes type {
+  0% {
+    width: 0
+  }
+  1% {
+    opacity: 1
+  }
+  99.9% {
+    border-right: .15em solid orange
+  }
+  100% {
+    opacity: 1;
+    border: none
+  }
+}
+@keyframes blink {
+  50% {
+    border-color: transparent
+  }
+}
+@-webkit-keyframes blink {
+  50% {
+    border-color: tranparent
+  }
 }
 ```
