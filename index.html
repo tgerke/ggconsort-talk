@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="author" content="Travis Gerke, ScD" />
     <script src="index_files/header-attrs-2.10.1/header-attrs.js"></script>
+    <link href="index_files/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -312,6 +313,127 @@ summary(study_cohorts)
 ##  9 excluded_chemo         113 Prior chemotherapy      
 ## 10 excluded_mets           90 Bone metastasis
 ```
+
+---
+## Diagram layout and aesthetics
+
+* `cohort_count_adorn()`: A convenience function for labels
+
+```r
+cohort_count_adorn(study_cohorts, randomized)
+```
+
+```
+## [1] "Randomized (n = 938)"
+```
+
+--
+* Also accepts custom labeling functions
+
+```r
+cohort_count_adorn(
+  study_cohorts, 
+  .label_fn = function(cohort, label, count, ...) {
+    glue::glue("{count} {label}")
+  })
+```
+
+```
+##  [1] "1200 Assessed for eligibility" "1141 Consented"               
+##  [3] "1028 Chemotherapy naive"       "938 Randomized"               
+##  [5] "469 Allocated to arm A"        "469 Allocated to arm B"       
+##  [7] "262 Excluded"                  "59 Declined to participate"   
+##  [9] "113 Prior chemotherapy"        "90 Bone metastasis"
+```
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+* consort_box_add(
+*   name = "full", x = 0, y = 50, label = cohort_count_adorn(., .full)
+* )
+```
+
+&lt;img src="index_files/figure-html/layout-1-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+  consort_box_add(
+    name = "full", x = 0, y = 50, label = cohort_count_adorn(., .full)
+  ) %&gt;%
+* consort_box_add(
+*   "randomized", 0, 30, cohort_count_adorn(., randomized)
+* )
+```
+
+&lt;img src="index_files/figure-html/layout-2-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+  consort_box_add(
+    name = "full", x = 0, y = 50, label = cohort_count_adorn(., .full)
+  ) %&gt;%
+  consort_box_add(
+    "randomized", 0, 30, cohort_count_adorn(., randomized)
+  ) %&gt;%
+* consort_box_add(
+*   "exclusions", 20, 40, glue::glue(
+*     '{cohort_count_adorn(study_cohorts, excluded)}&lt;br&gt;
+*     • {cohort_count_adorn(study_cohorts, excluded_declined)}&lt;br&gt;
+*     • {cohort_count_adorn(study_cohorts, excluded_chemo)}&lt;br&gt;
+*     • {cohort_count_adorn(study_cohorts, excluded_mets)}
+*     ')
+* )
+```
+
+---
+## Diagram layout and aesthetics
+
+&lt;img src="index_files/figure-html/layout-4-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+  consort_box_add(
+    name = "full", x = 0, y = 50, label = cohort_count_adorn(., .full)
+  ) %&gt;%
+  consort_box_add(
+    "randomized", 0, 30, cohort_count_adorn(., randomized)
+  ) %&gt;%
+  consort_box_add(
+    "exclusions", 20, 40, glue::glue(
+      '{cohort_count_adorn(study_cohorts, excluded)}&lt;br&gt;
+      • {cohort_count_adorn(study_cohorts, excluded_declined)}&lt;br&gt;
+      • {cohort_count_adorn(study_cohorts, excluded_chemo)}&lt;br&gt;
+      • {cohort_count_adorn(study_cohorts, excluded_mets)}
+      ')
+  ) %&gt;% 
+* consort_box_add(
+*   "arm_a", -30, 10, cohort_count_adorn(., treatment_a)
+* ) %&gt;%
+* consort_box_add(
+*   "arm_b", 30, 10, cohort_count_adorn(., treatment_b)
+* )
+```
+
+---
+## Diagram layout and aesthetics
+
+&lt;img src="index_files/figure-html/layout-6-1.png" width="504" style="display: block; margin: auto;" /&gt;
 
 &lt;style type="text/css"&gt;
 .title-slide-custom {
