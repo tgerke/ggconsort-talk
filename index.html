@@ -435,6 +435,151 @@ study_cohorts %&gt;%
 
 &lt;img src="index_files/figure-html/layout-6-1.png" width="504" style="display: block; margin: auto;" /&gt;
 
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+  consort_box_add(...) %&gt;%
+* consort_arrow_add(
+*   start = "full", start_side = "bottom",
+*   end = "randomized", end_side = "top"
+* )
+```
+
+&lt;img src="index_files/figure-html/layout-8-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+  consort_box_add(...) %&gt;%
+  consort_arrow_add(
+    start = "full", start_side = "bottom",
+    end = "randomized", end_side = "top"
+  ) %&gt;%
+* consort_arrow_add(
+*   end = "exclusions", end_side = "left", start_x = 0, start_y = 40
+* )
+```
+
+&lt;img src="index_files/figure-html/layout-10-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+  consort_box_add(...) %&gt;%
+  consort_arrow_add(
+    start = "full", start_side = "bottom",
+    end = "randomized", end_side = "top"
+  ) %&gt;%
+  consort_arrow_add(
+    end = "exclusions", end_side = "left", start_x = 0, start_y = 40
+  ) %&gt;%
+* consort_line_add(
+*   start_x = -30, start_y = 20, end_x = 30, end_y = 20,
+* )
+```
+
+---
+## Diagram layout and aesthetics
+
+&lt;img src="index_files/figure-html/layout-12-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_cohorts %&gt;%
+  consort_box_add(...) %&gt;%
+  consort_arrow_add(
+    start = "full", start_side = "bottom",
+    end = "randomized", end_side = "top"
+  ) %&gt;%
+  consort_arrow_add(
+    end = "exclusions", end_side = "left", start_x = 0, start_y = 40
+  ) %&gt;%
+  consort_line_add(
+    start_x = -30, start_y = 20, end_x = 30, end_y = 20,
+  ) %&gt;%
+* consort_arrow_add(
+*   start_x = 0, start_y = 30, end_x = 0, end_y = 20,
+* ) %&gt;%
+* consort_arrow_add(
+*   end = "arm_a", end_side = "top", start_x = -30, start_y = 20
+* ) %&gt;%
+* consort_arrow_add(
+*   end = "arm_b", end_side = "top", start_x = 30, start_y = 20
+* ) -&gt; study_consort
+```
+
+---
+## Diagram layout and aesthetics
+
+
+
+
+```r
+study_consort %&gt;%
+  ggplot() + 
+  geom_consort() + 
+  theme_consort(margin_h = 8, margin_v = 1)
+```
+
+&lt;img src="index_files/figure-html/consort-1-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Diagram layout and aesthetics
+
+
+```r
+study_consort %&gt;%
+  ggplot() + 
+  geom_consort() + 
+* ggtext::geom_richtext(
+*   aes(x = 0, y = 10, label = "Allocation"),
+*   fill = "#9bc0fc"
+* ) +
+  theme_consort(margin_h = 8, margin_v = 1)
+```
+
+---
+## Diagram layout and aesthetics
+
+&lt;img src="index_files/figure-html/consort-3-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+## Proceed to analysis
+
+
+```r
+study_cohorts %&gt;% cohort_pull(randomized)
+```
+
+```
+## # A tibble: 938 x 5
+##       id declined prior_chemo bone_mets treatment
+##    &lt;int&gt;    &lt;int&gt;       &lt;int&gt;     &lt;int&gt; &lt;chr&gt;    
+##  1 65464        0           0         0 Drug A   
+##  2 48228        0           0         0 Drug B   
+##  3 92586        0           0         0 Drug A   
+##  4 70176        0           0         0 Drug B   
+##  5 89052        0           0         0 Drug A   
+##  6 97333        0           0         0 Drug B   
+##  7 80724        0           0         0 Drug A   
+##  8 65186        0           0         0 Drug B   
+##  9 48837        0           0         0 Drug A   
+## 10 99005        0           0         0 Drug B   
+## # … with 928 more rows
+```
+
 &lt;style type="text/css"&gt;
 .title-slide-custom {
   position: relative;
