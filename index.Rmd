@@ -56,10 +56,18 @@ class: title-slide-custom
 Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Tim Mossholder</a> on <a href="https://unsplash.com/s/photos/selection?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 -->
 
+???
+
+Thanks to the amazing organizers of R/Medicine! I'm so happy to be back this year, all of the sessions so far have been incredible. I'm Travis Gerke, Director of Data Science at the Prostate Cancer Clinical Trials Consortium, where we manage about a quarter of all active early phase prostate cancer therapeutic trials in the US, with an increasing portfolio of international and late-phase studies as well. Our data science team is hiring, so feel free to reach out if you're looking. I'm here today to talk about CONSORT diagrams.
+
 ---
 ### Flashback: R/Medicine 2020
 
 ![](images/higgins-consort.png)
+
+???
+
+If you attended last year, you may remember Peter Higgins' excellent talk of the same ggconsort name. To avoid reinventing the wheel, I'm going to borrow two of his intro slides, and then provide some context for why I'm back to talk about this topic.
 
 ---
 ### What are CONSORT diagrams?
@@ -77,6 +85,10 @@ Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_me
 ![](images/nejm-consort.jpeg)
 ]
 
+???
+
+If you aren't familiar, CONSORT diagrams are figures which show the flow of participants through a trial. Here you see an example of a CONSORT diagram from NEJM, where you can see the number of participants (in this case infants) who were assessed for eligibility, the number who were ineligible for various reasons, and the number randomized and followed up. These diagrams are expected by most medical journals, certainly for clinical trials, and often these days for observational studies as well.
+
 ---
 ### CONSORT diagrams are artisanal products
 .h2-subtitle[★ Courtesy of Peter Higgins, R/Medicine 2020]
@@ -87,6 +99,10 @@ Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_me
 .h-center.w-50[
 ![](images/consort.gif)
 ]
+
+???
+
+To date, CONSORTs are typically hand-crafted into templates provided at the CONSORT group's website which is linked here. Peter last year used the apt word "artisinal" to describe this process. These templates work well enough, but copying and pasting from your analysis into word docs as you can see me doing in this slide can be error prone, and is a common gotcha for manuscript or study reviewers when numbers don't match up.
 
 ---
 ### Prior work
@@ -103,8 +119,18 @@ Photo by <a href="https://unsplash.com/@timmossholder?utm_source=unsplash&utm_me
 ![](images/diagrammer-consort.png)
 ]
 
+???
+
+Some R implementations of CONSORT diagram construction do exist. Thus far, these are not ggplot-based. Some of you may be familiar with the excellent DiagrammeR package which, when carefully used, can achieve this goal: Danny Wong, Norbert Kohler, and Ben Gerber's pull request to Peter Higgin's ggconsort repository do use it. The challenge with DiagrammeR is that its output is actually too elegant for blocky CONSORTs. You can see an unanswered SO question below, showing DiagrammeRs aesthetically nicer rendering of a CONSORT using one of the approaches above; unfortunately the curved lines don't conform to CONSORT rules. In other attempts, my group implemented a latex/tikz version a few years back, and earlier this year I embedded the flowchart.js library into an R package called flowcharter, which was also didn't permit enough customization.
+
 ---
 ### A fresh look / the goodness of the R community
+
+???
+
+So here we were, still lacking an end-to-end ggplot compatible CONSORT implementation. Having tinkered with this idea for years now, I had some building blocks in place, and what I was developing unfortunately did not extend Peter's package from last year. I didn't want to risk a ggconsort2 naming situation, so it was time for an email. (read email)
+
+--
 
 .css-typing[
 Hi Peter,
@@ -115,6 +141,10 @@ Are you willing to transfer the name?
 
 Travis
 ]
+
+???
+
+Peter, being the archetype of the generous and awesome R community responded.
 
 ---
 ### A fresh look / the goodness of the R community
@@ -148,6 +178,10 @@ class: middle
 ![](images/ggconsort-hex.svg)
 ]
 
+???
+
+And thus, ggconsort was born again.
+
 ---
 class: inverse, middle, center
 
@@ -157,13 +191,25 @@ CONSORT construction can be segmented into **.lightgreen[two]** stages
 
 <br>
 
+???
+
+The new ggconsort framework posits that CONSORT construction happens in two distinct stages, and provides convenience functions and R objects for each.
+
 --
 
 **.lightgreen[1.]** Counting and annotation at the time of data wrangling
 
+???
+
+First, at the time of data wrangling, we would like to capture counts of cohorts or subcohorts (for example, consented patients who are randomized) into a data object. This will streamline efficiency and enhance reproducibility when the source data changes, for example due to a regular data update.
+
 --
 
 **.lightgreen[2.]** Diagram layout and aesthetic design
+
+???
+
+Once the counting and annotation object is established, we can begin work on the second phase, diagram layout. We do this by creating a new data object that is ready to pass to CONSORT geoms in ggplot, which specifies layout and general aesthetics of the diagram.
 
 ---
 ## Counting and annotation 
@@ -172,6 +218,10 @@ CONSORT construction can be segmented into **.lightgreen[two]** stages
 trial_data
 ```
 
+???
+
+Let's work through an example. Here, you can see a simulated data frame which is included in the ggconsort package. trial_data contains information on 1200 patients who were eligible for a study. Some of these declined to participate (as denoted in the declined variable), or were ineligible due to two exclusion criteria (prior chemotherapy or bone metastasis). Eligible patients were randomized to receive Drug A or Drug B.
+
 ---
 ## Counting and annotation 
 
@@ -179,6 +229,9 @@ trial_data
 trial_data %>%
   cohort_start("Assessed for eligibility") #<<
 ```
+
+???
+The fundamental building block of ggconsort is a new object of type ggconsort_cohort. We initialize one in a dplyr chain using the cohort_start verb, which also accepts a label that desribes the full cohort represented by the source data.
 
 ---
 ## Counting and annotation 
@@ -191,6 +244,10 @@ trial_data %>%
   ) #<<
 ```
 
+???
+
+New cohorts are added to the ggconsort_cohort object using the cohort_define verb. The full data source object is always accessible as ".full", and we construct new subcohorts with standard dplyr. Here you see we've created the subcohort of 1141 consented participants.
+
 ---
 ## Counting and annotation 
 
@@ -202,6 +259,10 @@ trial_data %>%
     consented_chemonaive = consented %>% filter(prior_chemo != 1) #<<
   )
 ```
+
+???
+
+Further subcohorts can be defined using previously defined cohorts; here we identify the chemotherapy naive participants among those who were consented, using the consented cohort which was defined in the previous step.
 
 ---
 ## Counting and annotation 
@@ -217,6 +278,10 @@ trial_data %>%
     treatment_b = randomized %>% filter(treatment == "Drug B") #<<
   )
 ```
+
+???
+
+And in this way, we can continue to build out all subcohorts which need to be represented in the CONSORT diagram. We've now added randomized patients (those who were consented, chemo naive, and did not have bone metastasis), and those who were assigned to Drug A or Drug B. 
 
 ---
 ## Counting and annotation 
@@ -234,6 +299,10 @@ trial_data %>%
     excluded = anti_join(.full, randomized, by = "id") #<<
   )
 ```
+
+???
+
+Often in CONSORT diagrams, we need to count the difference between two cohorts for enumerating exclusions. anti_join is useful for this purpose. Here we use anti_join to identify the 262 excluded patients as the difference between the screened population of 1200 and the randomized population of 938.
 
 ---
 ## Counting and annotation 
@@ -292,12 +361,20 @@ study_cohorts <-
   )
 ```
 
+???
+
+Now, each of these cohorts should have a label for descriptive printing in the console or in the ultimate CONSORT diagram. We provide those labels with the consort_label verb. Finally, we store the ggconsort_cohort object into study_cohorts
+
 ---
 ## Counting and annotation 
 
 ```{r cohorts-summary}
 summary(study_cohorts)
 ```
+
+???
+
+ggconsort_cohort objects like study_cohorts have print and summary methods. Here is the summary of what we've built so far -- you can see I added a few more exclusion categories -- with their cohort name, count, and label.
 
 ---
 ## Diagram layout and aesthetics
@@ -306,6 +383,10 @@ summary(study_cohorts)
 ```{r adorn}
 cohort_count_adorn(study_cohorts, randomized)
 ```
+
+???
+
+We are now ready to move on to diagram layout, but before we do, I want to point out a convenience function for pasting or glueing cohort labels and their counts together into a single string (such as you would want in a CONSORT diagram box). cohort_count_adorn does this according to the default format shown. 
 
 --
 * Also accepts custom labeling functions
@@ -317,6 +398,10 @@ cohort_count_adorn(
   })
 ```
 
+???
+
+If you want a custom format, that's possible too by way of the .label_fn argument. Here you can see an example of placing the number in front. 
+
 ---
 ## Diagram layout and aesthetics
 
@@ -326,6 +411,10 @@ study_cohorts %>%
     name = "full", x = 0, y = 50, label = cohort_count_adorn(., .full) #<<
   ) #<<
 ```
+
+???
+
+We can now add our first CONSORT box with the consort_box_add verb. This function needs a name for your box, an x and y location, and a label. Notice the use of cohort_count_adorn in the label argument. You can see our box below, looks like it worked!
 
 ---
 ## Diagram layout and aesthetics
@@ -339,6 +428,10 @@ study_cohorts %>%
     "randomized", 0, 30, cohort_count_adorn(., randomized) #<<
   ) #<<
 ```
+
+???
+
+Let's add another box, this time for the randomized participant count. You can see that a lot of the heavy lifting has already been done by setting up the randomized cohort inside the ggconsort_cohort object, and then passing that subcohort to cohort_count_adorn.
 
 ---
 ## Diagram layout and aesthetics
@@ -360,6 +453,10 @@ study_cohorts %>%
       ') #<<
   ) #<<
 ```
+
+???
+
+Here's a more complicated box enumerating all of the exclusions. It's really more of the same though: name the box (in this case "exclusions"), position it with x and y, then pass a string for its contents with the help of cohort_count_adorn.
 
 ---
 ## Diagram layout and aesthetics
@@ -384,6 +481,10 @@ study_cohorts %>%
   geom_consort() + 
   theme_consort(margin_h = 8, margin_v = 1)
 ```
+
+???
+
+Here's our new box.
 
 ---
 ## Diagram layout and aesthetics
@@ -411,6 +512,10 @@ study_cohorts %>%
     "arm_b", 30, 10, cohort_count_adorn(., treatment_b) #<<
   ) #<<
 ```
+
+???
+
+Now we're really on a roll, and adding the boxes for the treatment arms is a piece of cake.
 
 ---
 ## Diagram layout and aesthetics
@@ -441,6 +546,10 @@ study_cohorts %>%
   geom_consort() + 
   theme_consort(margin_h = 8, margin_v = 1)
 ```
+
+???
+
+hooray! Let's add arrows.
 
 ---
 ## Diagram layout and aesthetics
@@ -483,6 +592,10 @@ study_cohorts %>%
   geom_consort() + 
   theme_consort(margin_h = 8, margin_v = 1)
 ```
+
+???
+
+Arrows are placed with consort_arrow_add. When you want an arrow to connect one box to another, you simply pass the name of the starting box and the name of the ending box, along with which sides of those boxes you want the arrow to connect. Here, we are drawing an arrow from the bottom of the full box to the top of the randomized box.
 
 ---
 ## Diagram layout and aesthetics
@@ -532,6 +645,10 @@ study_cohorts %>%
   theme_consort(margin_h = 8, margin_v = 1)
 ```
 
+???
+
+If an arrow doesn't start or end at a named box, you can specify start or end x/y coordinates instead of box names. Here, we start the exclusions arrow in the middle of the first arrow by passing start_x and start_y, and then tell it to end in the exclusions box. 
+
 ---
 ## Diagram layout and aesthetics
 
@@ -549,6 +666,10 @@ study_cohorts %>%
     start_x = -30, start_y = 20, end_x = 30, end_y = 20, #<<
   ) #<<
 ```
+
+???
+
+Sometimes, we need lines without arrow ends. consort_line_add takes care of this, and accepts arguments in the same form as consort_arrow_add.
 
 ---
 ## Diagram layout and aesthetics
@@ -589,6 +710,10 @@ study_cohorts %>%
   theme_consort(margin_h = 8, margin_v = 1)
 ```
 
+???
+
+Here, you see we've added the horizontal line between the randomized box and the allocation boxes.
+
 ---
 ## Diagram layout and aesthetics
 
@@ -615,6 +740,10 @@ study_cohorts %>%
     end = "arm_b", end_side = "top", start_x = 30, start_y = 20 #<<
   ) -> study_consort #<<
 ```
+
+???
+
+We only need 3 arrows to complete our CONSORT diagram, so we specify them with consort_arrow_add. Finally, let's store to an object called study_consort which will now have class ggconsort.
 
 ---
 ## Diagram layout and aesthetics
@@ -668,6 +797,10 @@ study_consort %>%
   theme_consort(margin_h = 8, margin_v = 1)
 ```
 
+???
+
+ggconsort objects can be passed into ggplot and plotted with geom_consort. theme_consort is a useful helper that sets the theme to void and lets you extend horizontal and vertical margins -- this is often necessary because some text boxes can extend beyond the ggplot defaults. It takes a little iteration to get the canvas right, but thus far I haven't observed the process to be too painful.
+
 ---
 ## Diagram layout and aesthetics
 
@@ -681,6 +814,10 @@ study_consort %>%
   ) + #<<
   theme_consort(margin_h = 8, margin_v = 1)
 ```
+
+???
+
+Since we're now operating in ggplot, we can of course use other ggplot geoms. Here, I'm using geom_richtext from ggtext to add a blue text box labelled "Allocation" in between the two treatment arm boxes. 
 
 ---
 ## Diagram layout and aesthetics
@@ -696,12 +833,39 @@ study_consort %>%
   theme_consort(margin_h = 8, margin_v = 1)
 ```
 
+???
+
+Like this.
+
 ---
 ## Proceed to analysis
 
 ```{r analysis-pull}
 study_cohorts %>% cohort_pull(randomized)
 ```
+
+???
+
+A final ggconsort function I'll point out is called cohort_pull. You can use this when you need to extract the analytic data frame of randomized patients to begin work in lm, survival, or whatever your ultimate aim is. You can also use cohort_pull to troubleshoot or investigate excluded patients or other subcohorts.
+
+---
+### Thank you!
+
+* R/Med organizers and program committee (Peter Higgins in particular 🙂)
+
+* Co-author and all-around software development mentor: Garrick Aden-Buie
+
+* You! The package is under active development; feel free to submit issues / PR
+  * [tgerke.github.io/ggconsort/](https://tgerke.github.io/ggconsort/)
+
+.h-center.w-90[
+![](images/ggconsort-pkgdown.png)
+]
+
+???
+
+Thank you again to the R Medicine organizers and progamming committee, and once more Peter Higgins for kindly passing the ggconsort torch. A special thanks to my co-author on this package Garrick Aden-Buie, who provided critically important feedback and ideas about how this package should behave, and who I'm very lucky to have as a friend and software development mentor to me. Lastly, thanks to you all for listening and hopefully picking up the package and trying it out. As I mention here, it is under active development, and I'm still working to round out some of the documentation. I'll look forward to hearing feedback on your experience, reach out any time. Thanks!
+
 
 ```{css, echo = FALSE}
 .title-slide-custom {
