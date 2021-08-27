@@ -28,6 +28,20 @@ style_duo_accent(
 )
 ```
 
+```{r setup, include=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(ggconsort)
+
+# higlight code from
+# https://www.garrickadenbuie.com/blog/highlight-lines-without-breaking-the-code-in-xaringan/
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  x <- stringr::str_replace(x, "^[[:blank:]]?([^*].+?)[[:blank:]]*#<<[[:blank:]]*$", "*\\1")
+  hook_source(x, options)
+})
+```
+
 class: title-slide-custom
 
 ## ggconsort
@@ -147,6 +161,139 @@ CONSORT construction can be segmented into **.lightgreen[two]** stages
 
 **.lightgreen[2.]** Diagram layout and aesthetic design
 
+---
+## Counting and annotation 
+
+```{r cohorts-1}
+trial_data
+```
+
+---
+## Counting and annotation 
+
+```{r cohorts-2}
+trial_data %>%
+  cohort_start("Assessed for eligibility") #<<
+```
+
+---
+## Counting and annotation 
+
+```{r cohorts-3}
+trial_data %>%
+  cohort_start("Assessed for eligibility") %>% 
+  cohort_define( #<<
+    consented = .full %>% filter(declined != 1) #<<
+  ) #<<
+```
+
+---
+## Counting and annotation 
+
+```{r cohorts-4}
+trial_data %>%
+  cohort_start("Assessed for eligibility") %>% 
+  cohort_define(
+    consented = .full %>% filter(declined != 1),
+    consented_chemonaive = consented %>% filter(prior_chemo != 1) #<<
+  )
+```
+
+---
+## Counting and annotation 
+
+```{r cohorts-5}
+trial_data %>%
+  cohort_start("Assessed for eligibility") %>% 
+  cohort_define(
+    consented = .full %>% filter(declined != 1),
+    consented_chemonaive = consented %>% filter(prior_chemo != 1),
+    randomized = consented_chemonaive %>% filter(bone_mets != 1), #<<
+    treatment_a = randomized %>% filter(treatment == "Drug A"), #<<
+    treatment_b = randomized %>% filter(treatment == "Drug B") #<<
+  )
+```
+
+---
+## Counting and annotation 
+
+```{r cohorts-6}
+trial_data %>%
+  cohort_start("Assessed for eligibility") %>% 
+  cohort_define(
+    consented = .full %>% filter(declined != 1),
+    consented_chemonaive = consented %>% filter(prior_chemo != 1),
+    randomized = consented_chemonaive %>% filter(bone_mets != 1),
+    treatment_a = randomized %>% filter(treatment == "Drug A"),
+    treatment_b = randomized %>% filter(treatment == "Drug B"),
+    # anti_join is useful for counting exclusions -------------
+    excluded = anti_join(.full, randomized, by = "id") #<<
+  )
+```
+
+---
+## Counting and annotation 
+
+```{r cohorts-7, results='hide'}
+trial_data %>%
+  cohort_start("Assessed for eligibility") %>% 
+  cohort_define(
+    consented = .full %>% filter(declined != 1),
+    consented_chemonaive = consented %>% filter(prior_chemo != 1),
+    randomized = consented_chemonaive %>% filter(bone_mets != 1),
+    treatment_a = randomized %>% filter(treatment == "Drug A"),
+    treatment_b = randomized %>% filter(treatment == "Drug B"),
+    # anti_join is useful for counting exclusions -------------
+    excluded = anti_join(.full, randomized, by = "id")
+  ) %>%
+  cohort_label( #<<
+    consented = "Consented", #<<
+    consented_chemonaive = "Chemotherapy naive", #<<
+    randomized = "Randomized", #<<
+    treatment_a = "Allocated to arm A", #<<
+    treatment_b = "Allocated to arm B", #<<
+    excluded = "Excluded" #<<
+  ) -> study_cohorts #<<
+```
+
+```{r cohorts-8, include=FALSE}
+study_cohorts <- 
+  trial_data %>%
+  cohort_start("Assessed for eligibility") %>%
+  # Define cohorts using named expressions --------------------
+  # Notice that you can use previously defined cohorts in subsequent steps
+  cohort_define(
+    consented = .full %>% filter(declined != 1),
+    consented_chemonaive = consented %>% filter(prior_chemo != 1),
+    randomized = consented_chemonaive %>% filter(bone_mets != 1),
+    treatment_a = randomized %>% filter(treatment == "Drug A"),
+    treatment_b = randomized %>% filter(treatment == "Drug B"),
+    # anti_join is useful for counting exclusions -------------
+    excluded = anti_join(.full, randomized, by = "id"),
+    excluded_declined = anti_join(.full, consented, by = "id"),
+    excluded_chemo = anti_join(consented, consented_chemonaive, by = "id"),
+    excluded_mets = anti_join(consented_chemonaive, randomized, by = "id")
+  ) %>%
+  # Provide text labels for cohorts ---------------------------
+  cohort_label(
+    consented = "Consented",
+    consented_chemonaive = "Chemotherapy naive",
+    randomized = "Randomized",
+    treatment_a = "Allocated to arm A",
+    treatment_b = "Allocated to arm B",
+    excluded = "Excluded",
+    excluded_declined = "Declined to participate",
+    excluded_chemo = "Prior chemotherapy",
+    excluded_mets = "Bone metastasis"
+  )
+```
+
+---
+## Counting and annotation 
+
+```{r cohorts-summary}
+summary(study_cohorts)
+```
 
 ```{css, echo = FALSE}
 .title-slide-custom {
@@ -348,5 +495,4 @@ CONSORT construction can be segmented into **.lightgreen[two]** stages
     border-color: tranparent
   }
 }
-
 ```

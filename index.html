@@ -13,6 +13,8 @@
 
 
 
+
+
 class: title-slide-custom
 
 ## ggconsort
@@ -132,6 +134,184 @@ CONSORT construction can be segmented into **.lightgreen[two]** stages
 
 **.lightgreen[2.]** Diagram layout and aesthetic design
 
+---
+## Counting and annotation 
+
+
+```r
+trial_data
+```
+
+```
+## # A tibble: 1,200 x 5
+##       id declined prior_chemo bone_mets treatment
+##    &lt;int&gt;    &lt;int&gt;       &lt;int&gt;     &lt;int&gt; &lt;chr&gt;    
+##  1 65464        0           0         0 Drug A   
+##  2 48228        0           0         0 Drug B   
+##  3 92586        0           0         0 Drug A   
+##  4 70176        0           0         0 Drug B   
+##  5 89052        0           0         0 Drug A   
+##  6 97333        0           0         0 Drug B   
+##  7 80724        0           0         0 Drug A   
+##  8 65186        0           0         0 Drug B   
+##  9 48837        0           0         0 Drug A   
+## 10 99005        0           0         0 Drug B   
+## # … with 1,190 more rows
+```
+
+---
+## Counting and annotation 
+
+
+```r
+trial_data %&gt;%
+* cohort_start("Assessed for eligibility")
+```
+
+```
+## A ggconsort cohort of 1200 observations with 0 cohorts.
+```
+
+---
+## Counting and annotation 
+
+
+```r
+trial_data %&gt;%
+  cohort_start("Assessed for eligibility") %&gt;% 
+* cohort_define(
+*   consented = .full %&gt;% filter(declined != 1)
+* )
+```
+
+```
+## A ggconsort cohort of 1200 observations with 1 cohort:
+##   - consented (1141)
+```
+
+---
+## Counting and annotation 
+
+
+```r
+trial_data %&gt;%
+  cohort_start("Assessed for eligibility") %&gt;% 
+  cohort_define(
+    consented = .full %&gt;% filter(declined != 1),
+*   consented_chemonaive = consented %&gt;% filter(prior_chemo != 1)
+  )
+```
+
+```
+## A ggconsort cohort of 1200 observations with 2 cohorts:
+##   - consented (1141)
+##   - consented_chemonaive (1028)
+```
+
+---
+## Counting and annotation 
+
+
+```r
+trial_data %&gt;%
+  cohort_start("Assessed for eligibility") %&gt;% 
+  cohort_define(
+    consented = .full %&gt;% filter(declined != 1),
+    consented_chemonaive = consented %&gt;% filter(prior_chemo != 1),
+*   randomized = consented_chemonaive %&gt;% filter(bone_mets != 1),
+*   treatment_a = randomized %&gt;% filter(treatment == "Drug A"),
+*   treatment_b = randomized %&gt;% filter(treatment == "Drug B")
+  )
+```
+
+```
+## A ggconsort cohort of 1200 observations with 5 cohorts:
+##   - consented (1141)
+##   - consented_chemonaive (1028)
+##   - randomized (938)
+##   - treatment_a (469)
+##   - treatment_b (469)
+```
+
+---
+## Counting and annotation 
+
+
+```r
+trial_data %&gt;%
+  cohort_start("Assessed for eligibility") %&gt;% 
+  cohort_define(
+    consented = .full %&gt;% filter(declined != 1),
+    consented_chemonaive = consented %&gt;% filter(prior_chemo != 1),
+    randomized = consented_chemonaive %&gt;% filter(bone_mets != 1),
+    treatment_a = randomized %&gt;% filter(treatment == "Drug A"),
+    treatment_b = randomized %&gt;% filter(treatment == "Drug B"),
+    # anti_join is useful for counting exclusions -------------
+*   excluded = anti_join(.full, randomized, by = "id")
+  )
+```
+
+```
+## A ggconsort cohort of 1200 observations with 6 cohorts:
+##   - consented (1141)
+##   - consented_chemonaive (1028)
+##   - randomized (938)
+##   - treatment_a (469)
+##   - treatment_b (469)
+##   - excluded (262)
+```
+
+---
+## Counting and annotation 
+
+
+```r
+trial_data %&gt;%
+  cohort_start("Assessed for eligibility") %&gt;% 
+  cohort_define(
+    consented = .full %&gt;% filter(declined != 1),
+    consented_chemonaive = consented %&gt;% filter(prior_chemo != 1),
+    randomized = consented_chemonaive %&gt;% filter(bone_mets != 1),
+    treatment_a = randomized %&gt;% filter(treatment == "Drug A"),
+    treatment_b = randomized %&gt;% filter(treatment == "Drug B"),
+    # anti_join is useful for counting exclusions -------------
+    excluded = anti_join(.full, randomized, by = "id")
+  ) %&gt;%
+* cohort_label(
+*   consented = "Consented",
+*   consented_chemonaive = "Chemotherapy naive",
+*   randomized = "Randomized",
+*   treatment_a = "Allocated to arm A",
+*   treatment_b = "Allocated to arm B",
+*   excluded = "Excluded"
+* ) -&gt; study_cohorts
+```
+
+
+
+---
+## Counting and annotation 
+
+
+```r
+summary(study_cohorts)
+```
+
+```
+## # A tibble: 10 x 3
+##    cohort               count label                   
+##    &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;                   
+##  1 .full                 1200 Assessed for eligibility
+##  2 consented             1141 Consented               
+##  3 consented_chemonaive  1028 Chemotherapy naive      
+##  4 randomized             938 Randomized              
+##  5 treatment_a            469 Allocated to arm A      
+##  6 treatment_b            469 Allocated to arm B      
+##  7 excluded               262 Excluded                
+##  8 excluded_declined       59 Declined to participate 
+##  9 excluded_chemo         113 Prior chemotherapy      
+## 10 excluded_mets           90 Bone metastasis
+```
 
 &lt;style type="text/css"&gt;
 .title-slide-custom {
@@ -333,7 +513,6 @@ CONSORT construction can be segmented into **.lightgreen[two]** stages
     border-color: tranparent
   }
 }
-
 &lt;/style&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
