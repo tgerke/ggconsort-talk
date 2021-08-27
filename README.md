@@ -2,6 +2,7 @@
 
 [slides]: https://tgerke.github.io/ggconsort-talk/#1
 [recording]: forthcoming
+[package]: https://tgerke.github.io/ggconsort/
 
 Travis Gerke
 
@@ -10,6 +11,8 @@ This is a 15-minute talk most recently given at [R/Medicine 2021](https://r-medi
 &#x1F4FA; [View slides][slides]
 
 &#x1F3A5; [Watch recording][recording]
+
+&#x1f4e6; [ggconsort package][package]
 
 &#x270D;&#xFE0F; Abstract: 
 
