@@ -1,7 +1,7 @@
 ## Introduction to the ggconsort package
 
 [slides]: https://tgerke.github.io/ggconsort-talk/#1
-[recording]: forthcoming
+[recording]: https://www.youtube.com/watch?v=a8A638n6Qew
 [package]: https://tgerke.github.io/ggconsort/
 
 Travis Gerke
